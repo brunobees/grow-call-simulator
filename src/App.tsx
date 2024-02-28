@@ -1,47 +1,25 @@
-import * as React from "react"
-import {
-  AlertCircle,
-  Archive,
-  ArchiveX,
-  File,
-  Inbox,
-  MessagesSquare,
-  PenBox,
-  Search,
-  Send,
-  ShoppingCart,
-  Trash2,
-  Users2,
-} from "lucide-react"
+import React, { useEffect, useState } from "react";
 
-import { AccountSwitcher } from "@/components/account-switcher"
-import { MailDisplay } from "@/components/mail-display"
-import { MailList } from "@/components/mail-list"
-import { Nav } from "@/components/nav"
-import { Mail } from "@/data"
-import { useMail } from "@/use-mail"
-import { cn } from "@/lib/utils"
-import { Separator } from "@/components/ui/separator"
-import { Input } from "@/components/ui/input"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
+import { Header } from "@/components/header";
+import { TitleBar } from "@/components/title-bar";
+import { Mail } from "@/data";
+import { useMail } from "@/use-mail";
+import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface MailProps {
   accounts: {
-    label: string
-    email: string
-    icon: React.ReactNode
-  }[]
-  mails: Mail[]
-  defaultLayout: number[] | undefined
-  defaultCollapsed?: boolean
-  navCollapsedSize: number
+    label: string;
+    email: string;
+    icon: React.ReactNode;
+  }[];
+  mails: Mail[];
+  defaultLayout: number[] | undefined;
+  defaultCollapsed?: boolean;
+  navCollapsedSize: number;
 }
 
 function App({
@@ -51,152 +29,109 @@ function App({
   defaultCollapsed = false,
   navCollapsedSize,
 }: MailProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed)
-  const [mail] = useMail()
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [message, setMessage] = useState("");
+
+  const connectWebSocket = () => {
+    const socket = new WebSocket("ws://localhost:8088");
+
+    socket.onopen = (evt) => {
+      console.log("WEBSOCKET - emulator.onopen");
+    };
+
+    socket.onmessage = (evt) => {
+      const data = evt.data;
+      if (data) {
+        if (data["comando"]) {
+          switch (data["comando"]) {
+            case "MakeCall":
+              sendMessage();
+              break;
+            default:
+              break;
+          }
+        } else if (data["evento"]) {
+          switch (data["evento"]) {
+            case "DisconnectCall":
+              sendMessage();
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    };
+
+    socket.onerror = (evt) => {
+      console.log("WEBSOCKET - emulator.onerror: ", evt);
+    };
+
+    socket.onclose = (evt) => {
+      console.log("WEBSOCKET - emulator.onclose");
+    };
+
+    setSocket(socket);
+  };
+
+  const sendMessage = () => {
+    const data = {
+      evento: "DisconnectCall",
+      ani: "5511999999999",
+      dnis: "35879",
+      ramal: "10738",
+      gid: "615|254387|1",
+    };
+
+    if (socket) {
+      console.log(data)
+      const stringData = JSON.stringify(data);
+      socket.send(stringData);
+      console.log("WEBSOCKET - emulator.send: ", stringData);
+    }
+  };
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <ResizablePanelGroup
-        direction="horizontal"
-        onLayout={(sizes: number[]) => {
-          document.cookie = `react-resizable-panels:layout=${JSON.stringify(
-            sizes
-          )}`
-        }}
-        className="h-full max-h-[800px] items-stretch"
-      >
-        <ResizablePanel
-          defaultSize={defaultLayout[0]}
-          collapsedSize={navCollapsedSize}
-          collapsible={true}
-          minSize={15}
-          maxSize={20}
-          onCollapse={(collapsed) => {
-            setIsCollapsed(collapsed)
-            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-              collapsed
-            )}`
-          }}
-          className={cn(isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out")}
-        >
-          <div className={cn("flex h-[52px] items-center justify-center", isCollapsed ? 'h-[52px]': 'px-2')}>
-            <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} />
+    <>
+      <TitleBar />
+      <TooltipProvider delayDuration={0}>
+        <div className={cn("flex items-center justify-center")}>
+          <Header onMakeCall={sendMessage} />
+        </div>
+        <div className="h-[68%] text-sm flex items-center justify-center w-full">
+          <div>
+            <img
+              className="w-8 h-auto"
+              src="./src/assets/bees_logo.webp"
+              alt="Avaya Logo"
+            />
           </div>
-          <Separator />
-          <Nav
-            isCollapsed={isCollapsed}
-            links={[
-              {
-                title: "Inbox",
-                label: "128",
-                icon: Inbox,
-                variant: "default",
-              },
-              {
-                title: "Drafts",
-                label: "9",
-                icon: File,
-                variant: "ghost",
-              },
-              {
-                title: "Sent",
-                label: "",
-                icon: Send,
-                variant: "ghost",
-              },
-              {
-                title: "Junk",
-                label: "23",
-                icon: ArchiveX,
-                variant: "ghost",
-              },
-              {
-                title: "Trash",
-                label: "",
-                icon: Trash2,
-                variant: "ghost",
-              },
-              {
-                title: "Archive",
-                label: "",
-                icon: Archive,
-                variant: "ghost",
-              },
-            ]}
-          />
-          <Separator />
-          <Nav
-            isCollapsed={isCollapsed}
-            links={[
-              {
-                title: "Social",
-                label: "972",
-                icon: Users2,
-                variant: "ghost",
-              },
-              {
-                title: "Updates",
-                label: "342",
-                icon: AlertCircle,
-                variant: "ghost",
-              },
-              {
-                title: "Forums",
-                label: "128",
-                icon: MessagesSquare,
-                variant: "ghost",
-              },
-              {
-                title: "Shopping",
-                label: "8",
-                icon: ShoppingCart,
-                variant: "ghost",
-              },
-              {
-                title: "Promotions",
-                label: "21",
-                icon: Archive,
-                variant: "ghost",
-              },
-            ]}
-          />
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-          <Tabs defaultValue="all">
-            <div className="flex items-center px-4 py-2">
-              <h1 className="text-xl font-bold">Inbox</h1>
-              <TabsList className="ml-auto">
-                <TabsTrigger value="all" className="text-zinc-600 dark:text-zinc-200">All mail</TabsTrigger>
-                <TabsTrigger value="unread" className="text-zinc-600 dark:text-zinc-200">Unread</TabsTrigger>
-              </TabsList>
-            </div>
-            <Separator />
-            <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <form>
-                <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search" className="pl-8" />
-                </div>
-              </form>
-            </div>
-            <TabsContent value="all" className="m-0">
-              <MailList items={mails} />
-            </TabsContent>
-            <TabsContent value="unread" className="m-0">
-              <MailList items={mails.filter((item) => !item.read)} />
-            </TabsContent>
-          </Tabs>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[2]}>
-          <MailDisplay
-            mail={mails.find((item) => item.id === mail.selected) || null}
-          />
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </TooltipProvider>
-  )
+        </div>
+        <div className="flex flex-col w-full gap-4 items-center">
+          <Button onClick={connectWebSocket} size="sm" className="w-[90%]">
+            Connect
+          </Button>
+          <Label
+            htmlFor="mute"
+            className="flex flex-col items-center gap-2 text-xs font-normal"
+          >
+            <span className="flex  items-center gap-2">
+              <Switch id="mute" aria-label="Mute thread" /> Enable Keep Alive
+              event sending
+            </span>
+            <small>
+              Make with 💛 by{" "}
+              <a
+                className="font-bold text-[hsl(60,99%,66%)] underline"
+                href="https://github.com/bruno-candia"
+              >
+                Bruno
+              </a>
+            </small>
+          </Label>
+        </div>
+      </TooltipProvider>
+    </>
+  );
 }
 
-export default App
+export default App;

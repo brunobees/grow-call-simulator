@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { Mail } from "@/components/mail"
 import { accounts, mails } from "@/data"
 import './index.css'
+
 
 const defaultLayout = undefined
 const defaultCollapsed = undefined

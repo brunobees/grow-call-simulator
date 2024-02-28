@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
     --background: 20 14.3% 4.1%;
@@ -10,7 +10,7 @@
     --card-foreground: 60 9.1% 97.8%;
     --popover: 20 14.3% 4.1%;
     --popover-foreground: 60 9.1% 97.8%;
-    --primary: 47.9 95.8% 53.1%;
+    --primary: 60 99% 66%;
     --primary-foreground: 26 83.3% 14.1%;
     --secondary: 12 6.5% 15.1%;
     --secondary-foreground: 60 9.1% 97.8%;
@@ -25,13 +25,12 @@
     --ring: 35.5 91.7% 32.9%;
   }
 }
- 
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
     /* font-feature-settings: "rlig" 1, "calt" 1; */
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
@@ -54,4 +53,69 @@
   .container {
     @apply px-4;
   }
+}
+
+#root {
+  color: #fff;
+  background-color: #000;
+  border: solid #111;
+  width: 330px;
+  height: 633px;
+  border-width: 9px;
+  border-radius: 38px;
+  background-image: hsl(var(--background));
+  z-index: 200;
+
+}
+
+#title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 20px 10px 20px;
+  -webkit-app-region: drag;
+  position: relative;
+}
+
+#cam {
+  -webkit-app-region: drag;
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  width: 130px;
+  height: 25px;
+  border-radius: 0px 0px 10px 10px;
+  background: #111;
+}
+
+#wbs-status {
+  display: flex;
+  gap: 8px;
+  margin: 10px 5px 10px 0px;
+  align-items: flex-end;
+  flex-direction: row;
+}
+
+#wbs-status span {
+  font-size: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-self: flex-end;
+  cursor: none;
+}
+
+#window-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+#window-controls button {
+  font-size: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
 }
