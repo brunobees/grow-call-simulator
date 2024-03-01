@@ -22,12 +22,12 @@ export const useWebSocket = (url: string) => {
       },
     ]);
 
-    // console.log('Mensagem recebida:', event.data);
+    console.log('Mensagem recebida:', event.data);
   }, []);
 
   const connect = useCallback(() => {
     if (status === WebSocketStatus.OPEN || status === WebSocketStatus.CONNECTING) {
-      // console.log('WebSocket já está conectado ou conectando');
+      console.log('WebSocket já está conectado ou conectando');
       return;
     }
 
@@ -38,18 +38,18 @@ export const useWebSocket = (url: string) => {
     setStatus(WebSocketStatus.AWAITING_CONNECTION);
 
     ws.onopen = () => {
-      // console.log('Conexão WebSocket aberta');
+      console.log('Conexão WebSocket aberta');
       setStatus(WebSocketStatus.OPEN);
     };
 
     ws.onmessage = onMessage;
 
     ws.onerror = (error) => {
-      // console.error('Erro na conexão WebSocket:', error);
+      console.error('Erro na conexão WebSocket:', error);
     };
 
     ws.onclose = () => {
-      // console.log('Conexão WebSocket fechada');
+      console.log('Conexão WebSocket fechada');
       setStatus(WebSocketStatus.CLOSED);
     };
 
@@ -58,7 +58,7 @@ export const useWebSocket = (url: string) => {
 
   const close = useCallback(() => {
     if (status === WebSocketStatus.CLOSED || status === WebSocketStatus.CLOSING) {
-      // console.log('WebSocket já está fechado ou fechando');
+      console.log('WebSocket já está fechado ou fechando');
       return;
     }
 
@@ -73,7 +73,7 @@ export const useWebSocket = (url: string) => {
     if (socket && status === WebSocketStatus.OPEN) {
       socket.send(JSON.stringify(message));
     } else {
-      // console.log('WebSocket não está aberto.');
+      console.log('WebSocket não está aberto.');
     }
   }, [socket, status]);
 

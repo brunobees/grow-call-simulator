@@ -25,7 +25,7 @@ export function TitleBar({ status }: { status: WebSocketStatus }) {
       </div>
       <div id="wbs-status">
         {isStatusOpen && <span>WBS</span>}
-        <span><Wifi size={16} color='green' /></span>
+        <span className='flex h-2 w-2 rounded-full bg-green-600'></span>
       </div>
     </div>
   );

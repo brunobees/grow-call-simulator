@@ -54,8 +54,6 @@ const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, "index.html");
 
 async function createWindow() {
-  // 
-  // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
   win = new BrowserWindow({
     title: "Avaya Simulator",
@@ -75,7 +73,7 @@ async function createWindow() {
     frame: false,
     transparent: true, // Isso torna a janela transparente
   });
-  win.webContents.openDevTools();
+
   if (url) {
     win.loadURL(url);
   } else {
@@ -121,6 +119,10 @@ async function createWindow() {
 
   globalShortcut.register("CommandOrControl+R", () => {
     win?.reload();
+  });
+
+  globalShortcut.register("CommandOrControl+I", () => {
+    win?.webContents.openDevTools();
   });
 
   // Apply electron-updater

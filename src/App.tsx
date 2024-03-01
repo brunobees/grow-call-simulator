@@ -35,7 +35,7 @@ function App() {
   function handleSearchLogs(event: { target: { value: any; }; }) {
     const search = event.target.value;
     console.log(logs)
-    // SEARCH If have the part of the word in the event
+
     setSearchedLogs(logs.filter(log => log.evento.includes(search))); 
     console.log(searchedLogs);
   }
