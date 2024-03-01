@@ -59,7 +59,7 @@
     "@types/ws": "^8.5.10",
     "@vitejs/plugin-react": "^4.0.4",
     "autoprefixer": "^10.4.16",
-    "electron": "^28.1.0",
+    "electron": "^29.1.0",
     "electron-builder": "^24.6.3",
     "postcss": "^8.4.31",
     "react": "^18.2.0",
