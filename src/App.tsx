@@ -1,136 +1,144 @@
-import React, { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import { Header } from "@/components/header";
 import { TitleBar } from "@/components/title-bar";
-import { Mail } from "@/data";
-import { useMail } from "@/use-mail";
-import { cn } from "@/lib/utils";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { useWebSocket } from "./hooks/useWebSocket";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Archive, ArchiveX, ChevronsDownUp, Filter, Search, Trash2 } from "lucide-react";
+import { WebsocketEventData } from "./type/websocket";
+import { Input } from "./components/ui/input";
 
-interface MailProps {
-  accounts: {
-    label: string;
-    email: string;
-    icon: React.ReactNode;
-  }[];
-  mails: Mail[];
-  defaultLayout: number[] | undefined;
-  defaultCollapsed?: boolean;
-  navCollapsedSize: number;
-}
+function App() {
+  const { status, connect, close, logs, sendMessage } = useWebSocket('ws://localhost:8088');
+  const [searchedLogs, setSearchedLogs] = useState<Array<WebsocketEventData>>([]);
+  const logsEndRef = useRef<HTMLDivElement>(null);
 
-function App({
-  accounts,
-  mails,
-  defaultLayout = [265, 440, 655],
-  defaultCollapsed = false,
-  navCollapsedSize,
-}: MailProps) {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [message, setMessage] = useState("");
 
-  const connectWebSocket = () => {
-    const socket = new WebSocket("ws://localhost:8088");
-
-    socket.onopen = (evt) => {
-      console.log("WEBSOCKET - emulator.onopen");
-    };
-
-    socket.onmessage = (evt) => {
-      const data = evt.data;
-      if (data) {
-        if (data["comando"]) {
-          switch (data["comando"]) {
-            case "MakeCall":
-              sendMessage();
-              break;
-            default:
-              break;
-          }
-        } else if (data["evento"]) {
-          switch (data["evento"]) {
-            case "DisconnectCall":
-              sendMessage();
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    };
-
-    socket.onerror = (evt) => {
-      console.log("WEBSOCKET - emulator.onerror: ", evt);
-    };
-
-    socket.onclose = (evt) => {
-      console.log("WEBSOCKET - emulator.onclose");
-    };
-
-    setSocket(socket);
-  };
-
-  const sendMessage = () => {
-    const data = {
-      evento: "DisconnectCall",
-      ani: "5511999999999",
-      dnis: "35879",
-      ramal: "10738",
-      gid: "615|254387|1",
-    };
-
-    if (socket) {
-      console.log(data)
-      const stringData = JSON.stringify(data);
-      socket.send(stringData);
-      console.log("WEBSOCKET - emulator.send: ", stringData);
+  function handleConnection() {
+    if (status === "OPEN") {
+      close();
+    } else {
+      connect();
     }
-  };
+  }
+
+  function handleSearchLogs(event: { target: { value: any; }; }) {
+    const search = event.target.value;
+    console.log(logs)
+    // SEARCH If have the part of the word in the event
+    setSearchedLogs(logs.filter(log => log.evento.includes(search))); 
+    console.log(searchedLogs);
+  }
+
+  // Efeito para lidar com mensagens recebidas
+  useEffect(() => {
+    console.log(logs)
+    logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [logs]);
 
   return (
-    <>
-      <TitleBar />
-      <TooltipProvider delayDuration={0}>
-        <div className={cn("flex items-center justify-center")}>
-          <Header onMakeCall={sendMessage} />
-        </div>
-        <div className="h-[68%] text-sm flex items-center justify-center w-full">
-          <div>
-            <img
-              className="w-8 h-auto"
-              src="./src/assets/bees_logo.webp"
-              alt="Avaya Logo"
-            />
+    <TooltipProvider delayDuration={0}>
+      <TitleBar status={status} />
+      <div className="flex items-center justify-center">
+        <Header sendMessage={sendMessage} />
+      </div>
+        <div className="flex items-center px-4 py-2">
+          <div className="flex items-center gap-2">
+          <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <form >
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input onChange={handleSearchLogs} placeholder="Search" className="pl-8" />
+                </div>
+              </form>
+            </div>
+            <Separator orientation="vertical" className="mx-1 h-6" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Filter className="h-4 w-4" />
+                  <span className="sr-only">Filter Logs</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Filter Logs</TooltipContent>
+            </Tooltip>
           </div>
         </div>
-        <div className="flex flex-col w-full gap-4 items-center">
-          <Button onClick={connectWebSocket} size="sm" className="w-[90%]">
-            Connect
-          </Button>
-          <Label
-            htmlFor="mute"
-            className="flex flex-col items-center gap-2 text-xs font-normal"
-          >
-            <span className="flex  items-center gap-2">
-              <Switch id="mute" aria-label="Mute thread" /> Enable Keep Alive
-              event sending
-            </span>
-            <small>
-              Make with 💛 by{" "}
-              <a
-                className="font-bold text-[hsl(60,99%,66%)] underline"
-                href="https://github.com/bruno-candia"
-              >
-                Bruno
-              </a>
-            </small>
-          </Label>
+      {status === "OPEN" ? (
+        <div className="h-[380px] text-sm flex justify-start items-center w-full">
+          <ScrollArea className="h-[380px] w-full">
+            {logs.map((log, index) => {
+              const keysToShow = Object.keys(log).filter(key => key !== 'id' && key !== 'evento' && key !== 'eventoType' && key !== 'type');
+              return (
+                <div key={log.id}>
+                  <Collapsible className="w-full self-start px-4 text-wrap py-4">
+                    <div className="flex items-center justify-between space-x-4 mb-2 w-full">
+                      <h4 className="text-sm font-semibold">
+                        {log.eventoType}
+                      </h4>
+                      {keysToShow.length > 0 && (<CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <ChevronsDownUp className="h-4 w-4" />
+                          <span className="sr-only">Toggle</span>
+                        </Button>
+                      </CollapsibleTrigger>)}
+                    </div>
+                    <div className="rounded-md border px-4 py-2 mb font-mono text-xs shadow-sm">
+                      {log.evento}
+                    </div>
+                    <CollapsibleContent className="space-y-2">
+                      {keysToShow.map((key) => (
+                        <div key={key} className="rounded-md border px-4 py-2 mt-2 font-mono text-xs shadow-sm">
+                          {`${key}: ${log[key as keyof WebsocketEventData]}`}
+                        </div>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                  <Separator />
+                </div>
+              )
+            })}
+          </ScrollArea>
         </div>
-      </TooltipProvider>
-    </>
+      ) : (
+        <div className="h-[380px] text-sm flex justify-center items-center w-full">
+          <img
+            className="w-8 h-auto"
+            src="./src/assets/bees_logo.webp"
+            alt="Avaya Logo"
+          />
+        </div>
+      )}
+      <div className="flex flex-col w-full gap-4 items-center">
+        <Button onClick={handleConnection} size="sm" disabled={status === "CONNECTING"} className={`w-[90%] ${cn(
+          status === "CONNECTING" ? "bg-gray-500 text-gray-950" : "hsl(60,99%,66%)",
+          "hover:bg-opacity-80"
+        )}`}>
+          {status === "OPEN" ? "DISCONNECT" : "CONNECT"}
+        </Button>
+        <Label htmlFor="mute" className="flex flex-col items-center gap-2 text-xs font-normal">
+          <span className="flex items-center gap-2">
+            <Switch id="mute" aria-label="Mute thread" /> Enable Keep Alive event sending
+          </span>
+          <small>
+            Made with 💛 by{" "}
+            <a className="font-bold text-[hsl(60,99%,66%)] underline" href="https://github.com/bruno-candia">
+              Bruno
+            </a>
+          </small>
+        </Label>
+      </div>
+    </TooltipProvider>
   );
 }
 

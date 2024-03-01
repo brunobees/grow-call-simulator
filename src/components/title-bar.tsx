@@ -1,3 +1,4 @@
+import { WebSocketStatus } from '@/type/websocket';
 import { Wifi } from 'lucide-react';
 
 declare global {
@@ -10,10 +11,10 @@ declare global {
   }
 }
 
-export function TitleBar() {
+export function TitleBar({ status }: { status: WebSocketStatus }) {
   const minimizeWindow = () => window.electron.minimizeWindow();
   const closeWindow = () => window.electron.closeWindow();
-
+  const isStatusOpen = status === WebSocketStatus.OPEN;
   return (
     <div id="title-bar">
       <div id="window-controls">
@@ -23,8 +24,8 @@ export function TitleBar() {
       <div id="cam">
       </div>
       <div id="wbs-status">
-        <span><Wifi size={16} color='green'/></span>
-        <span>WBS</span>
+        {isStatusOpen && <span>WBS</span>}
+        <span><Wifi size={16} color='green' /></span>
       </div>
     </div>
   );
