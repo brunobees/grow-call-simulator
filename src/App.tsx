@@ -19,7 +19,7 @@ import { WebsocketEventData } from "./type/websocket";
 import { Input } from "./components/ui/input";
 
 function App() {
-  const { status, connect, close, logs, sendMessage } = useWebSocket('ws://localhost:8088');
+  const { status, connect, clientsConnected, close, logs, sendMessage } = useWebSocket('ws://localhost:8088');
   const [searchedLogs, setSearchedLogs] = useState<Array<WebsocketEventData>>([]);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +48,7 @@ function App() {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <TitleBar status={status} />
+      <TitleBar status={status} clientsConnected={clientsConnected} />
       <div className="flex items-center justify-center">
         <Header sendMessage={sendMessage} />
       </div>

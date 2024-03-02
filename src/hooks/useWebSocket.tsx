@@ -6,10 +6,17 @@ export const useWebSocket = (url: string) => {
   const [status, setStatus] = useState<WebSocketStatus>(WebSocketStatus.IDLE);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [logs, setLogs] = useState<Array<WebsocketEventData>>([]);
+  const [clientsConnected, setClientsConnected] = useState<number>(0);
 
   const onMessage = useCallback((event: MessageEvent) => {
     const data = JSON.parse(event.data);
     const logId = uuidv4();
+
+    if (data.eventoType === 'Client Connected') {
+      setClientsConnected(prev => prev + 1);
+    } else if (data.eventoType === 'Client Disconnected') {
+      setClientsConnected(prev => prev - 1);
+    }
 
     setLogs((prevLogs) => [
       ...prevLogs,
@@ -85,5 +92,5 @@ export const useWebSocket = (url: string) => {
     };
   }, [socket]);
 
-  return { status, logs, connect, close, sendMessage };
+  return { status, clientsConnected, logs, connect, close, sendMessage };
 };
