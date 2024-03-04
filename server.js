@@ -19,8 +19,27 @@ wss.on("connection", function connection(ws) {
   const clientId = uuidv4(); // Gera um ID único para o cliente
   clients.set(ws, clientId); // Associa o WebSocket ao ID
 
-  // Notifica todos os clientes sobre a conexão
-  notifyClients("Connected");
+  console.log(`Cliente ${clientId} conectado`);
+
+  ws.send(
+    JSON.stringify({
+      evento: "Welcome to the WebSocket server!",
+      eventoType: "Initialization",
+      clientId: clientId, // Envia o ID do cliente de volta para ele
+    })
+  );
+
+  // Notifica todos os clientes, exceto o que acabou de se conectar, sobre a nova conexão
+  const connectMessage = JSON.stringify({
+    eventoType: "Client CONNECTED",
+    evento: clientId,
+  });
+
+  clients.forEach((id, client) => {
+    if (client !== ws && client.readyState === WebSocket.OPEN) {
+      client.send(connectMessage);
+    }
+  });
 
   ws.on("message", function incoming(data, isBinary) {
     // Converte a mensagem para uma string se for binária
@@ -33,42 +52,24 @@ wss.on("connection", function connection(ws) {
       wss.broadcast(parsedMessage);
     } catch (error) {
       console.error("Erro ao fazer parse da mensagem:", error);
-      // console.log("Formato de mensagem não esperado:", message);
+      console.log("Formato de mensagem não esperado:", message);
     }
   });
 
   ws.on("close", () => {
-    clients.delete(ws); // Remove o cliente do Set
+    clients.delete(ws); // Remove o cliente do Set ao se desconectar
+    console.log(`Cliente ${clientId} desconectado`);
 
     // Notifica todos os clientes sobre a desconexão
-    notifyClients("Disconnected");
-  });
-
-  // Envia uma mensagem inicial ao cliente no formato JSON
-  ws.send(
-    JSON.stringify({
-      evento: "Welcome to the WebSocket server!",
-      eventoType: "Initialization",
-    })
-  );
-});
-
-function notifyClients(connectionType) {
-  const connectedClientsIds = Array.from(clients.values()); // Extrai os IDs dos clientes conectados
-
-  connectedClientsIds.forEach((clientId) => {
-    // Envia uma mensagem para cada cliente com a lista de IDs conectados
-    const message = JSON.stringify({
-      eventoType: `Client ${connectionType}`,
+    const disconnectMessage = JSON.stringify({
+      eventoType: "Client DISCONNECTED",
       evento: clientId,
     });
 
-    clients.forEach((id, client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
+    const parsedMessage = JSON.parse(disconnectMessage);
+    
+    wss.broadcast(parsedMessage);
   });
-}
+});
 
 console.log(`Servidor WebSocket rodando na porta ${PORT}`);

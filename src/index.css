@@ -64,10 +64,9 @@
   width: 330px;
   height: 633px;
   border-width: 9px;
-  border-radius: 38px;
+  border-radius: 52px;
   background-image: hsl(var(--background));
   z-index: 200;
-
 }
 
 #title-bar {
@@ -98,6 +97,7 @@
   margin: 10px 5px 10px 0px;
   align-items: flex-end;
   flex-direction: row;
+  margin-right: 12px;
 }
 
 #wbs-status span {
@@ -109,7 +109,8 @@
 
 #window-controls {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  margin-left: 12px;
   align-items: center;
   justify-content: center;
 }
