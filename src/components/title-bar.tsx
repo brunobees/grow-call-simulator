@@ -29,6 +29,7 @@ export function TitleBar({ status, clientsConnected }: TitleBarProps) {
         <button id="min-button" onClick={minimizeWindow}>🟡</button>
       </div>
       <div id="cam">
+        <span>Beta v.0.0.0</span>
       </div>
       <div id="wbs-status">
         {isStatusOpened &&

@@ -1,6 +1,6 @@
 {
-  "name": "grow-all-simulator",
-  "version": "2.2.0",
+  "name": "grow-call-simulator",
+  "version": "0.0.0",
   "main": "dist-electron/main/index.js",
   "description": "",
   "license": "MIT",

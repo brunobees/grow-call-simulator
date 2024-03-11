@@ -89,7 +89,7 @@ function App() {
         <div className="h-[410px] text-sm flex justify-center items-center w-full">
           <img
             className="w-8 h-auto"
-            src="./src/assets/bees_logo.webp"
+            src="https://www.bees.com/sites/g/files/wnfebl8851/files/styles/webp/public/BEES.COM/About%20Us/Slider%20with%20Timeline/timeline-april-27th-2020.webp?itok=RzufhdHs"
             alt="Avaya Logo"
           />
         </div>
