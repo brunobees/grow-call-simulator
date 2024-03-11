@@ -16,16 +16,14 @@ export const useWebSocket = (url: string) => {
     console.log(event)
     const data = JSON.parse(event.data);
   
-    // Para desconexões, verifica se já existe um log para este clientId
     if (data.eventoType === "Client DISCONNECTED") {
       const alreadyLogged = logs.some(log => log.evento === data.evento && log.eventoType === data.eventoType);
       if (alreadyLogged) {
         console.log("Evento de desconexão já registrado:", data.evento);
-        return; // Ignora logs duplicados
+        return;
       }
     }
   
-    // Adiciona o log se não for duplicado
     setLogs(prevLogs => [...prevLogs, {
       id: uuidv4(),
       evento: data.evento,
@@ -34,11 +32,10 @@ export const useWebSocket = (url: string) => {
       ...data,
     }]);
   
-    // Atualiza o contador de clientes conectados
     if (data.eventoType === "Client CONNECTED") {
       setClientsConnected(prev => prev + 1);
     } else if (data.eventoType === "Client DISCONNECTED") {
-      setClientsConnected(prev => Math.max(0, prev - 1)); // Evita números negativos
+      setClientsConnected(prev => Math.max(0, prev - 1));
     }
   }, [logs]);
 
@@ -54,7 +51,6 @@ export const useWebSocket = (url: string) => {
     setStatus(WebSocketStatus.CONNECTING);
     const ws = new WebSocket(url);
 
-    // Aqui, definimos o status para AWAITING_CONNECTION logo após iniciar a instância WebSocket
     setStatus(WebSocketStatus.AWAITING_CONNECTION);
 
     ws.onopen = () => {
