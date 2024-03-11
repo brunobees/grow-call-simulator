@@ -10,19 +10,13 @@ function App() {
     useWebSocket("ws://localhost:8088");
 
   function handleConnection() {
-    if (status === "OPEN") {
-      close();
-    } else {
-      connect();
-    }
+    status === "OPEN" ? close() : connect();
   }
 
   return (
     <TooltipProvider delayDuration={0}>
       <TitleBar status={status} clientsConnected={clientsConnected} />
-      <div className="flex items-center justify-center">
-        <Header sendMessage={sendMessage} />
-      </div>
+      <Header sendMessage={sendMessage} />
       {status === "OPEN" ? (
         <LogArea logs={logs} />
       ) : (

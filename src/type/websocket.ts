@@ -1,11 +1,11 @@
 export enum WebSocketStatus {
-  IDLE = 'IDLE',
-  CONNECTING = 'CONNECTING',
-  OPEN = 'OPEN',
-  CONNECTED_NO_PEER = 'CONNECTED_NO_PEER',
-  CLOSING = 'CLOSING',
-  CLOSED = 'CLOSED',
-  AWAITING_CONNECTION = "AWAITING_CONNECTION"
+  IDLE = "IDLE",
+  CONNECTING = "CONNECTING",
+  OPEN = "OPEN",
+  CONNECTED_NO_PEER = "CONNECTED_NO_PEER",
+  CLOSING = "CLOSING",
+  CLOSED = "CLOSED",
+  AWAITING_CONNECTION = "AWAITING_CONNECTION",
 }
 
 export interface WebsocketEventData {
@@ -33,4 +33,8 @@ export interface TriggerEventParams {
   isTyped: boolean;
 }
 
-
+export interface OptionsProps {
+  title: string;
+  label?: string;
+  variant: "default" | "ghost";
+}
