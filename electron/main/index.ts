@@ -11,6 +11,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { update } from "./update";
 import '../../server.js'; 
+import path from 'path';
 
 globalThis.__filename = fileURLToPath(import.meta.url);
 globalThis.__dirname = dirname(__filename);
@@ -56,8 +57,8 @@ const indexHtml = join(process.env.DIST, "index.html");
 async function createWindow() {
 
   win = new BrowserWindow({
-    title: "Avaya Simulator",
-    icon: join(process.env.VITE_PUBLIC, "favicon.ico"),
+    title: "Grow Call Simulator",
+    icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
     webPreferences: {
       preload,
       // Certifique-se de manter as boas práticas de segurança:
@@ -122,7 +123,9 @@ async function createWindow() {
   });
 
   globalShortcut.register("CommandOrControl+I", () => {
-    win?.webContents.openDevTools();
+    win?.webContents.openDevTools({
+      mode: "detach",
+    });
   });
 
   // Apply electron-updater

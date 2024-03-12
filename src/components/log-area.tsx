@@ -8,20 +8,39 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useEffect, useRef } from "react";
 
 interface LogAreaProps {
   logs: WebsocketEventData[];
 }
 
 function LogArea({ logs }: LogAreaProps) {
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const scrollToBottom = () => {
+      if (viewportRef.current) {
+        viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
+      }
+    };
+
+    scrollToBottom();
+  }, [logs]);
+
   return (
     <div className="h-[410px] text-sm flex justify-start items-center w-full">
-      <ScrollArea className="h-[410px] w-full my-8">
+      <ScrollArea
+        onViewportRef={(ref) => {
+          viewportRef.current = ref;
+        }}
+        className="h-[410px] w-full my-8"
+      >
         {logs.map((log) => {
           const keysToShow = Object.keys(log).filter(
             (key) =>
               key !== "id" &&
               key !== "evento" &&
+              key !== "comando" &&
               key !== "eventoType" &&
               key !== "type"
           );

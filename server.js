@@ -17,7 +17,7 @@ wss.on("connection", function connection(ws) {
   const clientId = uuidv4();
   clients.set(ws, clientId);
 
-  console.log(`Cliente ${clientId} conectado`);
+  console.log(`Client ${clientId} connected`);
 
   ws.send(
     JSON.stringify({
@@ -45,14 +45,14 @@ wss.on("connection", function connection(ws) {
       const parsedMessage = JSON.parse(message);
       wss.broadcast(parsedMessage);
     } catch (error) {
-      console.error("Erro ao fazer parse da mensagem:", error);
-      console.log("Formato de mensagem não esperado:", message);
+      console.error("Error when parsing the message:", error);
+      console.log("Unexpected message format:", message);
     }
   });
 
   ws.on("close", () => {
     clients.delete(ws);
-    console.log(`Cliente ${clientId} desconectado`);
+    console.log(`Client ${clientId} disconnected`);
 
     const disconnectMessage = JSON.stringify({
       eventoType: "Client DISCONNECTED",
@@ -65,4 +65,4 @@ wss.on("connection", function connection(ws) {
   });
 });
 
-console.log(`Servidor WebSocket rodando na porta ${PORT}`);
+console.log(`WebSocket server running on the port${PORT}`);

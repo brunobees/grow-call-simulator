@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/tooltip";
 
 interface CallTypeProps {
-  setSelected: (params: string) => void;
+  setCallType: (params: string) => void;
 }
 
-export function CallType({ setSelected }: CallTypeProps) {
+export function CallType({ setCallType }: CallTypeProps) {
 
   function handleSelectChange(event: { target: { value: any } }) {
-    setSelected(event.target.value);
+    setCallType(event.target.value);
   }
 
   return (

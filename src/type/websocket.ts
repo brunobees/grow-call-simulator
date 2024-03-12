@@ -26,15 +26,16 @@ export interface WebsocketEventData {
 }
 
 export interface TriggerEventParams {
-  evento: string;
+  evento?: string;
   phone: string;
   poc_id: string;
   vendor_id?: string;
-  isTyped: boolean;
+  isTyped?: boolean;
 }
 
-export interface OptionsProps {
+export interface EventsProps {
   title: string;
+  type: string;
   label?: string;
-  variant: "default" | "ghost";
+  variant: "default" | "ghost" | "outline";
 }

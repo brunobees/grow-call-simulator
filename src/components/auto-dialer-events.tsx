@@ -1,19 +1,34 @@
-import {
-  autoDialerRequest,
-} from "@/utils/events";
-import {
-  SheetDescription,
-} from "@/components/ui/sheet";
+import { autoDialerRequest } from "@/utils/avaya-events";
+import { SheetDescription } from "@/components/ui/sheet";
 
 import { Events } from "@/components/events";
+import { TriggerEventParams } from "@/type/websocket";
 
-function AutoDialerEvents() {
+interface AutoDialerEventsProps {
+  customPocData: TriggerEventParams;
+  sendMessage?: (params: TriggerEventParams) => void;
+  status: string;
+  setOpen: (openStatus: boolean) => void;
+}
+
+function AutoDialerEvents({
+  setOpen,
+  status,
+  customPocData,
+  sendMessage,
+}: AutoDialerEventsProps) {
   return (
     <>
-      <SheetDescription className="ml-3 mt-4 mb-2">
+      <SheetDescription className="font-medium ml-3 mt-4 mb-2">
         Auto Dialer Request
       </SheetDescription>
-      <Events links={autoDialerRequest} />
+      <Events
+        setOpen={setOpen}
+        status={status}
+        customPocData={customPocData}
+        sendMessage={sendMessage}
+        links={autoDialerRequest}
+      />
     </>
   );
 }

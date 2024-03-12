@@ -1,6 +1,7 @@
 import { WebSocketStatus } from '@/type/websocket';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import packageInfo from '../../package.json';
 
 declare global {
   interface Window {
@@ -29,7 +30,7 @@ export function TitleBar({ status, clientsConnected }: TitleBarProps) {
         <button id="min-button" onClick={minimizeWindow}>🟡</button>
       </div>
       <div id="cam">
-        <span>Beta v.0.0.0</span>
+        <span className='text-gray-400'>Beta v{packageInfo.version}</span>
       </div>
       <div id="wbs-status">
         {isStatusOpened &&
