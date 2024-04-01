@@ -51,7 +51,7 @@
     "date-fns": "^3.3.1",
     "electron-updater": "^6.1.1",
     "jotai": "^2.6.5",
-    "lucide-react": "^0.341.0",
+    "lucide-react": "^0.364.0",
     "react-day-picker": "^8.10.0",
     "react-hook-form": "^7.51.0",
     "react-phone-number-input": "^3.3.9",
